@@ -145,6 +145,8 @@ int ObExprAIComplete::eval_ai_complete(const ObExpr &expr,
 
     if (OB_FAIL(ret)){
     } else if (OB_FAIL(ObAIFuncUtils::get_ai_func_info(temp_allocator, model_id, info))) {
+    } else if (OB_ISNULL(info)) {
+      ret = OB_ERR_UNEXPECTED;
     } else if (OB_ISNULL(endpoint_resolver)) {
       ret = OB_ERR_UNEXPECTED;
     } else if (OB_FAIL(endpoint_resolver->resolve_by_model_name(

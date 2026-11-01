@@ -81,16 +81,24 @@ int ObAiModelEndpointInfo::deep_copy(
   int ret = OB_SUCCESS;
   reset();
   endpoint_id_ = other.endpoint_id_;
-  if (OB_FAIL(ob_write_string(allocator, other.name_, name_))) {
-  } else if (OB_FAIL(ob_write_string(allocator, other.scope_, scope_))) {
-  } else if (OB_FAIL(ob_write_string(allocator, other.ai_model_name_, ai_model_name_))) {
-  } else if (OB_FAIL(ob_write_string(allocator, other.url_, url_))) {
-  } else if (OB_FAIL(ob_write_string(allocator, other.access_key_, access_key_))) {
-  } else if (OB_FAIL(ob_write_string(allocator, other.provider_, provider_))) {
-  } else if (OB_FAIL(ob_write_string(allocator, other.request_model_name_, request_model_name_))) {
-  } else if (OB_FAIL(ob_write_string(allocator, other.parameters_, parameters_))) {
-  } else if (OB_FAIL(ob_write_string(allocator, other.request_transform_fn_, request_transform_fn_))) {
-  } else if (OB_FAIL(ob_write_string(allocator, other.response_transform_fn_, response_transform_fn_))) {
+  auto copy_str = [&allocator](const ObString &src, ObString &dst) -> int {
+    int ret = OB_SUCCESS;
+    if (src.empty()) {
+      dst.reset();
+    } else if (OB_FAIL(ob_write_string(allocator, src, dst))) {
+    }
+    return ret;
+  };
+  if (OB_FAIL(copy_str(other.name_, name_))) {
+  } else if (OB_FAIL(copy_str(other.scope_, scope_))) {
+  } else if (OB_FAIL(copy_str(other.ai_model_name_, ai_model_name_))) {
+  } else if (OB_FAIL(copy_str(other.url_, url_))) {
+  } else if (OB_FAIL(copy_str(other.access_key_, access_key_))) {
+  } else if (OB_FAIL(copy_str(other.provider_, provider_))) {
+  } else if (OB_FAIL(copy_str(other.request_model_name_, request_model_name_))) {
+  } else if (OB_FAIL(copy_str(other.parameters_, parameters_))) {
+  } else if (OB_FAIL(copy_str(other.request_transform_fn_, request_transform_fn_))) {
+  } else if (OB_FAIL(copy_str(other.response_transform_fn_, response_transform_fn_))) {
   }
   return ret;
 }
