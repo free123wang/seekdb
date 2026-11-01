@@ -56,6 +56,23 @@ const char *VALID_PROVIDERS[] = {
         } \
       } else
 
+#define EXTRACT_JSON_ELEM_INT_RANGE(json_key, member, min_val, max_val) \
+      if (elem.first.case_compare(json_key) == 0) { \
+        if (elem.second->json_type() != ObJsonNodeType::J_INT && \
+            elem.second->json_type() != ObJsonNodeType::J_UINT) { \
+          ret = OB_AI_FUNC_PARAM_VALUE_INVALID; \
+          LOG_USER_ERROR(OB_AI_FUNC_PARAM_VALUE_INVALID, elem.first.length(), elem.first.ptr()); \
+        } else { \
+          int64_t int_val = elem.second->get_int(); \
+          if (int_val < (min_val) || int_val > (max_val)) { \
+            ret = OB_AI_FUNC_PARAM_VALUE_INVALID; \
+            LOG_USER_ERROR(OB_AI_FUNC_PARAM_VALUE_INVALID, elem.first.length(), elem.first.ptr()); \
+          } else { \
+            member = int_val; \
+          } \
+        } \
+      } else
+
 #define EXTRACT_JSON_ELEM_END() \
   { \
     ret = OB_AI_FUNC_PARAM_INVALID; \
@@ -81,6 +98,7 @@ int ObAiModelEndpointInfo::deep_copy(
   int ret = OB_SUCCESS;
   reset();
   endpoint_id_ = other.endpoint_id_;
+  max_concurrency_ = other.max_concurrency_;
   auto copy_str = [&allocator](const ObString &src, ObString &dst) -> int {
     int ret = OB_SUCCESS;
     if (src.empty()) {
@@ -174,6 +192,7 @@ int ObAiModelEndpointInfo::merge_delta_endpoint(common::ObArenaAllocator &alloca
       EXTRACT_JSON_ELEM_STR("parameters", parameters_)
       EXTRACT_JSON_ELEM_STR("request_transform_fn", request_transform_fn_)
       EXTRACT_JSON_ELEM_STR("response_transform_fn", response_transform_fn_)
+      EXTRACT_JSON_ELEM_INT_RANGE("max_concurrency", max_concurrency_, 1, 1024)
       EXTRACT_JSON_ELEM_END()
     }
     iter.next();
